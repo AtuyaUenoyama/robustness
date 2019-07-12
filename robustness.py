@@ -2,6 +2,8 @@
 from math import *
 import numpy as np
 from matplotlib import pyplot as plt
+import matplotlib.animation as animation
+import matplotlib.patches as pat
 
 ##ユニットの各パラメータ
 M  = 0.05 #[kg] ユニットの質量
@@ -85,6 +87,18 @@ n_N[0] = -b
 
 ##終了時間
 EndTime = 0
+
+#######追加分#####################################################
+#######ここから###################################################
+#アニメーション用グラフ
+fig = plt.figure(figsize = (10, 6))
+
+
+# FigureにAxes(サブプロット)を追加
+#ax = fig.add_subplot(1,1,1,xlim=[-100,100],ylim=[-100,100])
+ax = plt.axes()
+##################################################################
+##########(1)#####################################################
 
 
 def Inertia(low_unit,high_unit,s):
@@ -303,6 +317,42 @@ def xy(low_unit,high_unit,s):
     xf[:,s] = xf[:,s-1] + x[:,s]*cos(theta[s]) - y[:,s]*sin(theta[s])
     yf[:,s] = yf[:,s-1] + x[:,s]*sin(theta[s]) + y[:,s]*cos(theta[s])
 
+#######追加分#####################################################
+#######(1)########################################################
+
+#画像表示の更新関数(複数ユニット用)
+def update1(j, x, y ,theta,AllUnits,step,b,h):
+
+    plt.cla()                      # 現在描写されているグラフを消去
+    ax.plot(-1,0)
+    ax.plot(1,1)
+    rec = np.zeros([AllUnits,step]) #四角形の関数
+    color = 'bgrcmykbgrcmykbgrcmyk' #色の配列(仮)
+    
+    angle = theta[j]*180/pi
+    #四角形をグラフに読み込み
+    for i in range(AllUnits):
+        rec = pat.Rectangle(xy = (x[i,j], y[i,j]), width = 2*b, height = 2*h,angle = angle , color = color[i], alpha = 0.5)
+        ax.add_patch(rec)
+        #print('x',i,'=',x[i,j]+b,'y',i,'=',y[i,j],'angle=',angle,)
+
+
+#画像表示の更新関数(複数ユニット用)
+def update2(j, x, y ,theta2,step,b,h):
+
+    plt.cla()                      # 現在描写されているグラフを消去
+    ax.plot(-1,0)
+    ax.plot(1,1)
+    
+    angle = theta2[j]*180/pi
+    #四角形をグラフに読み込み
+    rec = pat.Rectangle(xy = (x, y), width = 2*b, height = 2*h,angle = angle , color = 'b', alpha = 0.5)
+    ax.add_patch(rec)
+    #print('x',i,'=',x[i,j]+b,'y',i,'=',y[i,j],'angle=',angle,)
+
+##################################################################
+#######(2)########################################################
+
 low = Attacked_unit
 high  = Attacked_unit
 print("#####################################################################################")
@@ -359,57 +409,57 @@ for t in range(step-1):
 
     EndTime = t
 
-#
-plt.figure(figsize=(8,5))
-# t vs x のグラフ
+##
+#plt.figure(figsize=(8,5))
+## t vs x のグラフ
 
-for i in range (AllUnits):
-    plt.plot(x[i],label = i)
-plt.xlabel('t [ms]')
-plt.ylabel('x[m]')
-plt.legend()
-plt.xlim(0,EndTime)
-plt.savefig('各ユニットのx座標.png')
-plt.show()
+#for i in range (AllUnits):
+#    plt.plot(x[i],label = i)
+#plt.xlabel('t [ms]')
+#plt.ylabel('x[m]')
+#plt.legend()
+#plt.xlim(0,EndTime)
+#plt.savefig('各ユニットのx座標.png')
+#plt.show()
 
-plt.plot(x_G,label = "xG")
-plt.plot(x_G0,label = "xG0")
-plt.plot(x_G1,label = "xG1")
-plt.plot(x_G2,label = "xG2")
-plt.xlabel('t [ms]')
-plt.ylabel('x[m]')
-plt.legend()
-plt.xlim(0,EndTime)
-plt.savefig('全体G0G1G2の重心.png')
-plt.show()
+#plt.plot(x_G,label = "xG")
+#plt.plot(x_G0,label = "xG0")
+#plt.plot(x_G1,label = "xG1")
+#plt.plot(x_G2,label = "xG2")
+#plt.xlabel('t [ms]')
+#plt.ylabel('x[m]')
+#plt.legend()
+#plt.xlim(0,EndTime)
+#plt.savefig('全体G0G1G2の重心.png')
+#plt.show()
 
-plt.plot(dx_G0,label = "dxG0")
-plt.plot(dx_G1,label = "dxG1")
-plt.plot(dx_G2,label = "dxG2")
-plt.xlabel('t [ms]')
-plt.ylabel('dxdt[m/s]')
-plt.legend()
-plt.xlim(0,EndTime)
-plt.savefig('重心速度.png')
-plt.show()
+#plt.plot(dx_G0,label = "dxG0")
+#plt.plot(dx_G1,label = "dxG1")
+#plt.plot(dx_G2,label = "dxG2")
+#plt.xlabel('t [ms]')
+#plt.ylabel('dxdt[m/s]')
+#plt.legend()
+#plt.xlim(0,EndTime)
+#plt.savefig('重心速度.png')
+#plt.show()
 
 
-plt.plot(f1,label = "f1")
-plt.plot(f2,label = "f2")
-plt.xlabel('t [ms]')
-plt.ylabel('f1')
-plt.legend()
-plt.xlim(0,EndTime)
-plt.show()
+#plt.plot(f1,label = "f1")
+#plt.plot(f2,label = "f2")
+#plt.xlabel('t [ms]')
+#plt.ylabel('f1')
+#plt.legend()
+#plt.xlim(0,EndTime)
+#plt.show()
 
-plt.plot(theta,label = "theta")
-# plt.plot(w,label = "w")
-plt.xlabel('t [ms]')
-plt.ylabel('theta')
-plt.legend()
-plt.xlim(0,EndTime)
-plt.savefig('角度_吸収あり.png')
-plt.show()
+#plt.plot(theta,label = "theta")
+## plt.plot(w,label = "w")
+#plt.xlabel('t [ms]')
+#plt.ylabel('theta')
+#plt.legend()
+#plt.xlim(0,EndTime)
+#plt.savefig('角度_吸収あり.png')
+#plt.show()
 
 #
 # plt.plot(I_G,label = "IG")
@@ -419,13 +469,37 @@ plt.show()
 # plt.xlim(0,EndTime)
 # plt.show()
 
-plt.plot(n_N,label = "n")
-plt.xlabel('t [ms]')
-plt.ylabel('n')
-plt.legend()
-plt.xlim(0,EndTime)
-plt.savefig('垂直抗力の位置.png')
+#plt.plot(n_N,label = "n")
+#plt.xlabel('t [ms]')
+#plt.ylabel('n')
+#plt.legend()
+#plt.xlim(0,EndTime)
+#plt.savefig('垂直抗力の位置.png')
+#plt.show()
+
+#######追加分#####################################################
+#######(2)#######################################################
+
+#yの値を再計算
+yp = np.zeros ((AllUnits,step))
+for m in range(step):
+    for n in range(AllUnits):
+        yp[n,m] = -((x[n,m]+b)*sin(theta[m]))+(n*2*h*cos(theta[m]))
+
+#xの値を再計算（ｘ軸は正負逆）
+xp = np.zeros ((AllUnits,step))
+for m in range(step):
+    for n in range(AllUnits):
+        xp[n,m] = -(((x[n,m]+b)*cos(theta[m]))+(n*2*h*sin(theta[m])))
+
+#animation作成(intervalで間隔を変更)
+ani2 = animation.FuncAnimation(fig, update1, fargs = (xp, yp, theta, AllUnits, step, b, h), \
+    interval = 5, frames = step)
 plt.show()
+
+##################################################################
+########(3)#######################################################
+
 
 
 #######################################################################
@@ -476,19 +550,19 @@ for t in range(step-1):
 
     EndTime2 = t
 
-plt.figure(figsize=(8,5))
-plt.plot(theta,label = "theta")
-plt.plot(theta2,label = "theta2")
-# plt.plot(w,label = "w")
-plt.xlabel('t [ms]')
-plt.ylabel('theta')
-plt.legend()
-if EndTime > EndTime2:
-    plt.xlim(0,EndTime)
-else:
-    plt.xlim(0,EndTime2)
-plt.savefig('角度.png')
-plt.show()
+#plt.figure(figsize=(8,5))
+#plt.plot(theta,label = "theta")
+#plt.plot(theta2,label = "theta2")
+## plt.plot(w,label = "w")
+#plt.xlabel('t [ms]')
+#plt.ylabel('theta')
+#plt.legend()
+#if EndTime > EndTime2:
+#    plt.xlim(0,EndTime)
+#else:
+#    plt.xlim(0,EndTime2)
+#plt.savefig('角度.png')
+#plt.show()
 #
 # plt.figure(figsize=(8,3))
 # # t vs x のグラフ
@@ -507,3 +581,22 @@ plt.show()
 # plt.ylabel('theta2')
 # plt.legend()
 # plt.show()
+
+#######追加分#####################################################
+#######ここから###################################################
+#アニメーション用グラフ
+fig2 = plt.figure(figsize = (10, 6))
+
+
+# FigureにAxes(サブプロット)を追加
+#ax = fig.add_subplot(1,1,1,xlim=[-100,100],ylim=[-100,100])
+ax = plt.axes()
+
+
+#animation作成(intervalで間隔を変更)
+ani = animation.FuncAnimation(fig2, update2, fargs = (0, 0, theta2, step, b, yG2), \
+    interval = 5, frames = step)
+plt.show()
+
+##################################################################
+##########ここまで#################################################
